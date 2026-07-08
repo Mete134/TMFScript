@@ -1,0 +1,1544 @@
+```lua
+local WindUI = loadstring(game:HttpGetAsync("https://raw.githubusercontent.com/SLK-GAMING-MOD/WindUI-Mod/refs/heads/main/WindUI-Mod.luau"))()
+```
+
+---
+
+## TEMALAR
+
+Kullanıma hazır temalar:
+`Dark`, `Light`, `Rose`, `Plant`, `Red`, `Indigo`, `Sky`, `Violet`, `Amber`, `Emerald`, `Midnight`, `Crimson`, `MonokaiPro`, `CottonCandy`, `Mellowsi`, `Rainbow`, `Midv2`, `Grey`, `Moon`
+
+```lua
+WindUI:SetTheme("Dark")           -- Tema ayarla
+WindUI:GetCurrentTheme()          -- Aktif tema adını döner
+WindUI:GetThemes()                -- Tüm temaları döner
+
+-- Özel tema oluşturma
+WindUI:AddTheme({
+    Name = "BenimTema",
+    Accent     = Color3.fromHex"#18181b",
+    Background = Color3.fromHex"#101010",
+    Dialog     = Color3.fromHex"#161616",
+    Outline    = Color3.fromHex"#FFFFFF",
+    Text       = Color3.fromHex"#FFFFFF",
+    Placeholder= Color3.fromHex"#7a7a7a",
+    Button     = Color3.fromHex"#52525b",
+    Icon       = Color3.fromHex"#a1a1aa",
+    Toggle     = Color3.fromHex"#33C759",
+    Slider     = Color3.fromHex"#0091FF",
+    Checkbox   = Color3.fromHex"#0091FF",
+    Primary    = Color3.fromHex"#0091FF",
+    PanelBackground = Color3.fromHex"#FFFFFF",
+    PanelBackgroundTransparency = 0.95,
+    SliderIcon = Color3.fromHex"#908F95",
+})
+WindUI:SetTheme("BenimTema")
+
+-- Tema değişince tetiklenir
+WindUI:OnThemeChange(function(themeName)
+    print("Tema değişti:", themeName)
+end)
+
+-- Gradient tema rengi oluşturma
+local gradientRenk = WindUI:Gradient({
+    ["0"]   = { Color = Color3.fromHex"#ff0000", Transparency = 0 },
+    ["50"]  = { Color = Color3.fromHex"#00ff00", Transparency = 0 },
+    ["100"] = { Color = Color3.fromHex"#0000ff", Transparency = 0 },
+}, { Rotation = 45 })
+```
+
+---
+
+## WINDOW (ANA PENCERE)
+
+### Oluşturma — Tüm Parametreler
+
+```lua
+local Window = WindUI:CreateWindow({
+
+    -- ── ZORUNLU ──────────────────────────────────────────────
+    Title  = "Script Hub",
+
+    -- ── BAŞLIK ALANI ─────────────────────────────────────────
+    Author     = "Mert",               -- Başlığın altında küçük yazar metni
+    Icon       = "home",               -- Lucide ikon adı veya rbxassetid://...
+    IconSize   = 22,                   -- İkon piksel boyutu
+    IconThemed = false,                -- İkon tema rengini kullansın mı
+    IconRadius = 0,                    -- İkon köşe yuvarlaklığı
+
+    -- ── BOYUT & POZİSYON ──────────────────────────────────────
+    Size    = UDim2.new(0, 650, 0, 480),
+    MinSize = Vector2.new(560, 350),
+    MaxSize = Vector2.new(850, 560),
+    Resizable = true,
+
+    -- ── TEMA ─────────────────────────────────────────────────
+    Theme = "Dark",
+
+    -- ── ARKA PLAN ─────────────────────────────────────────────
+    -- Resim arka planı:
+    Background = "rbxassetid://12345678",
+    -- Video arka planı (video: öneki ile):
+    -- Background = "video:rbxassetid://12345678",
+    -- Gradient arka plan (tablo):
+    -- Background = WindUI:Gradient({ ["0"]={Color=...,Transparency=0}, ["100"]={Color=...,Transparency=0} }),
+    BackgroundVideo = nil,                    -- Ayrıca video kaynağı
+    BackgroundImageTransparency = 0,          -- Resim şeffaflığı (0–1)
+
+    -- ── PENCERE STİLİ ─────────────────────────────────────────
+    Radius              = 16,          -- Pencere köşe yuvarlaklığı
+    ElementsRadius      = nil,         -- Tüm elementlerin köşe yuvarlaklığı (override)
+    ShadowTransparency  = 0.7,         -- Gölge şeffaflığı (0=tam, 1=yok)
+    Transparent         = false,       -- Şeffaf mod (arka plan görünür)
+    Acrylic             = false,       -- Acrylic / frosted glass efekti
+
+    -- ── LAYOUT ────────────────────────────────────────────────
+    ModernLayout              = false, -- Elementler birleşik squircle görünümü
+    ModernLayoutMergeElements = true,  -- Modern layoutta element birleştirme
+    HidePanelBackground       = false, -- İçerik paneli arka planını gizle
+
+    -- ── KENAR ÇUBUĞU ──────────────────────────────────────────
+    SideBarWidth    = 200,             -- Kenar çubuğu genişliği (piksel)
+    HideSearchBar   = false,           -- true → arama çubuğunu gizler
+    ScrollBarEnabled= false,           -- Özel görsel scroll bar
+
+    -- ── TOPBAR ────────────────────────────────────────────────
+    Topbar = {
+        Height      = 52,             -- Topbar yüksekliği
+        ButtonsType = "Default",      -- "Default" (sağ üst) veya "Mac" (sol üst, renkli)
+    },
+    TopBarButtonIconSize = 16,        -- Topbar buton ikon boyutu
+
+    -- ── KLAVYE KISAYOLU ───────────────────────────────────────
+    ToggleKey = Enum.KeyCode.RightShift,  -- nil → kısayol yok
+
+    -- ── DOSYA SİSTEMİ ─────────────────────────────────────────
+    Folder = "BenimScript",           -- Config ve key dosyalarının klasörü
+
+    -- ── KULLANICI KARTI ───────────────────────────────────────
+    User = {
+        Enabled   = false,            -- Sol altta kullanıcı kartı göster
+        Anonymous = false,            -- Anonim göster (UserId=1 thumbnaili)
+        Callback  = function() end,   -- Karta tıklanınca
+    },
+
+    -- ── WATERMARK (FİLİGRAN) ──────────────────────────────────
+    Watermark = {
+        Text     = "v1.0.0 | Mert",
+        Position = "bottom-right",    -- Pozisyon (aşağıda liste var)
+        Opacity  = 0.45,
+        Size     = 14,
+        Padding  = 12,
+        Offset   = Vector2.new(0, 0),
+        Color    = nil,               -- nil → tema Text rengi
+        RichText = false,
+        Enabled  = true,
+    },
+
+    -- ── AÇIK BUTONU (KAPALI/MOBİL) ───────────────────────────
+    OpenButton = {
+        Title          = "Aç",
+        Icon           = "home",
+        Position       = UDim2.new(0.5, 0, 0, 28),
+        Draggable      = true,
+        OnlyIcon       = false,        -- Sadece ikonu göster, yazı yok
+        Scale          = 1,
+        Color          = ColorSequence.new(
+                            Color3.fromHex"#40c9ff",
+                            Color3.fromHex"#e81cff"
+                        ),
+        CornerRadius   = UDim.new(1, 0),
+        StrokeThickness= 2,
+        Enabled        = true,         -- false → açık butonu hiç gösterme
+    },
+
+    -- ── DİĞER ─────────────────────────────────────────────────
+    IgnoreAlerts        = false,       -- Kapat onay dialogunu atla
+    AutoScale           = true,        -- Ekrana göre otomatik ölçekle
+    BottomDragBarEnabled= true,        -- Alt sürükleme çubuğu
+
+    -- ── KEY SİSTEMİ (Opsiyonel) ───────────────────────────────
+    -- Aşağıdaki "KEY SİSTEMİ" bölümüne bakın
+})
+```
+
+---
+
+### Window Methodları — Tüm Liste
+
+```lua
+-- ── AÇMA / KAPAMA / YOK ETME ──────────────────────────────────────────────
+Window:Open()
+Window:Close()
+Window:Toggle()
+Window:Destroy()               -- Pencereyi ve tüm GUI'yi kalıcı olarak sil
+
+-- ── POZİSYON & BOYUT ──────────────────────────────────────────────────────
+Window:SetToTheCenter()        -- Pencereyi ekran ortasına taşı
+Window:SetSize(UDim2.new(0, 700, 0, 500))
+Window:ToggleFullscreen()      -- Tam ekran geçişi
+
+-- ── BAŞLIK & YAZAR & İKON ─────────────────────────────────────────────────
+Window:SetTitle("Yeni Başlık")
+Window:SetAuthor("Yeni Yazar")
+Window:SetIconSize(26)         -- Sayı: piksel | UDim2 de kabul eder
+
+-- ── ARKA PLAN ─────────────────────────────────────────────────────────────
+Window:SetBackgroundImage("rbxassetid://...")         -- Resim arka planı
+Window:SetBackgroundVideo("rbxassetid://...")         -- Video arka planı
+Window:SetBackgroundImageTransparency(0.5)            -- 0–1
+Window:SetBackgroundTransparency(0.15)                -- Şeffaflık değeri
+Window:ToggleTransparency(true)                       -- Şeffaf modu aç/kapat
+
+-- ── PANEL ARKA PLANI ──────────────────────────────────────────────────────
+Window:SetPanelBackgroundVisible(true)                -- Göster
+Window:SetPanelBackgroundHidden(true)                 -- Gizle
+
+-- ── ÖLÇEKLENDİRME ────────────────────────────────────────────────────────
+Window:SetUIScale(0.9)         -- 0.35–2.0 arası
+Window:GetUIScale()            -- Mevcut ölçeği döner
+
+-- ── CALLBACKS ─────────────────────────────────────────────────────────────
+Window:OnOpen(function()    print("Pencere açıldı")   end)
+Window:OnClose(function()   print("Pencere kapandı")  end)
+Window:OnDestroy(function() print("Pencere silindi")  end)
+
+-- ── TOGGLE TUŞU ───────────────────────────────────────────────────────────
+Window:SetToggleKey(Enum.KeyCode.RightControl)
+
+-- ── TAB YÖNETİMİ ──────────────────────────────────────────────────────────
+Window:SelectTab(1)            -- İndex ile seçim
+Window:SelectTab("Ayarlar")    -- İsim ile seçim
+Window:GetTabs()               -- Tüm tab objelerini tablo olarak döner
+
+-- ── GLOBAL ELEMENT YÖNETİMİ ───────────────────────────────────────────────
+Window:LockAll()               -- Tüm elementleri kilitle
+Window:UnlockAll()             -- Tüm elementlerin kilidini aç
+Window:GetLocked()             -- Kilitli elementlerin tablosunu döner
+Window:GetUnlocked()           -- Kilitsiz elementlerin tablosunu döner
+
+-- ── KISAYOL (SHORTCUT) SİSTEMİ ────────────────────────────────────────────
+local id = Window:BindShortcut(
+    Enum.KeyCode.S,            -- KeyCode veya string ("S", "LeftControl" vb.)
+    function(input, win, shortcut)
+        print("Ctrl+S basıldı")
+    end,
+    {
+        Ctrl             = true,   -- Ctrl gerekli mi
+        Shift            = false,  -- Shift gerekli mi
+        Alt              = false,  -- Alt gerekli mi
+        EnabledWhenClosed= false,  -- Pencere kapalıyken de çalışsın mı
+        Description      = "Kaydet",
+    }
+)
+Window:UnbindShortcut(id)      -- Kısayolu kaldır
+Window:ClearShortcuts()        -- Tüm kısayolları temizle
+Window:GetShortcuts()          -- Tüm kısayolları tablo olarak döner
+
+-- ── FLAG SİSTEMİ (Config ile entegre) ────────────────────────────────────
+Window:GetFlag("flagAdı")                   -- Değeri döner
+Window:SetFlag("flagAdı", değer)            -- Değeri ayarla
+Window:HasFlag("flagAdı")                   -- Bool döner
+Window:ListFlags()                          -- Tüm flag isimlerini döner
+Window:GetFlags()                           -- { isim = değer } tablosu döner
+Window:SetFlags({ flagAdı = değer, ... })   -- Toplu ayarla
+Window:GetFlagElement("flagAdı")            -- Element objesini döner
+
+-- ── TOPBAR BUTONLARI ──────────────────────────────────────────────────────
+Window:DisableTopbarButtons({"Close"})
+Window:DisableTopbarButtons({"Close", "Minimize", "Fullscreen"})
+
+-- ── ALT SÜRÜKLEME ÇUBUĞU ─────────────────────────────────────────────────
+Window:SetBottomDragBarEnabled(true)
+
+-- ── YENİDEN BOYUTLANDIRMA ─────────────────────────────────────────────────
+Window:IsResizable(true)
+
+-- ── WATERMARK ─────────────────────────────────────────────────────────────
+local wm = Window:Watermark({
+    Text     = "v2.0 | Mert",
+    Position = "bottom-right",
+    Opacity  = 0.45,
+    Size     = 14,
+    Padding  = 12,
+    Offset   = Vector2.new(0, 0),
+    Color    = nil,           -- nil → tema rengi
+    RichText = false,
+    Enabled  = true,
+})
+wm:SetText("v2.1 | Mert")
+wm:SetOpacity(0.7)
+wm:SetPosition("top-right")  -- veya UDim2 geçebilirsin
+wm:SetOffset(Vector2.new(10, -5))
+wm:SetPadding(16)
+wm:SetSize(16)
+wm:SetEnabled(false)
+wm:Destroy()
+
+-- Watermark pozisyon değerleri:
+-- "top-left"      "top-center"      "top-right"
+-- "center-left"   "center"          "center-right"
+-- "bottom-left"   "bottom-center"   "bottom-right"
+-- Veya direkt UDim2 koordinatı
+
+-- ── TAG (TOPBAR ETİKETİ) ──────────────────────────────────────────────────
+local tag = Window:Tag({
+    Title  = "BETA",
+    Color  = Color3.fromHex"#0091FF",   -- Color3, hex string, gradient tablo
+    Icon   = "star",                    -- opsiyonel
+    Border = true,
+    Radius = 999,
+})
+tag:SetTitle("v2.0")
+tag:SetColor(Color3.fromHex"#ff0000")
+tag:SetIcon("zap")
+tag:SetBorder(false)
+tag:Destroy()
+
+-- ── BİLDİRİM ──────────────────────────────────────────────────────────────
+local notif = WindUI:Notify({
+    Title                    = "Başlık",
+    Content                  = "İçerik metni",
+    Icon                     = "check",       -- Lucide icon veya rbxassetid
+    Duration                 = 5,             -- Saniye, nil=kapanmaz
+    CanClose                 = true,          -- X butonu
+    Background               = "rbxassetid://...",
+    BackgroundImageTransparency = 0.5,
+})
+notif:Close()                          -- Bildirimi manuel kapat
+WindUI:SetNotificationLower(true)      -- Altta topbar varsa bildirim yukarı çıkar
+
+-- ── DIALOG ────────────────────────────────────────────────────────────────
+local dlg = Window:Dialog({
+    Title   = "Emin misin?",
+    Content = "Bu işlem geri alınamaz.",
+    Icon    = "triangle-alert",
+    Width   = 320,                   -- Dialog genişliği
+    Buttons = {
+        {
+            Title    = "İptal",
+            Variant  = "Secondary",
+            Callback = function() end,
+        },
+        {
+            Title    = "Devam Et",
+            Variant  = "Primary",
+            Icon     = "check",
+            Callback = function() end,
+        },
+    },
+})
+-- Dialog kapamak için buton callback'inden veya:
+dlg:Close()
+
+-- ── POPUP ─────────────────────────────────────────────────────────────────
+WindUI:Popup({
+    Title     = "Popup Başlık",
+    Content   = "İçerik metni",
+    Icon      = "info",
+    IconThemed= true,
+    Thumbnail = {
+        Image = "rbxassetid://...",
+        Title = "Resim altı yazısı",
+    },
+    Buttons = {
+        { Title = "Tamam", Variant = "Primary", Callback = function() end },
+    },
+})
+
+-- ── SIDEBAR ELEMENTLERİ ───────────────────────────────────────────────────
+-- (Tab listesinin üstüne veya altına eklenir)
+local sbl = Window:SideBarLabel({
+    Title       = "v1.0.0",
+    Icon        = "info",
+    Height      = 34,
+    Placeholder = false,   -- true → soluk renk
+    Radius      = 10,
+    Visible     = true,
+    LayoutOrder = 1,
+})
+sbl:SetTitle("v1.1.0")
+sbl:SetVisible(false)
+sbl:Destroy()
+
+local sbb = Window:SideBarButton({
+    Title       = "Discord",
+    Icon        = "message-circle",
+    Variant     = "Secondary",   -- "Primary", "Secondary", "Tertiary", "White"
+    Callback    = function() end,
+    Height      = 34,
+    FullRounded = false,
+    Radius      = 10,
+    Visible     = true,
+    LayoutOrder = 2,
+})
+sbb:SetTitle("Yeni Başlık")
+sbb:SetCallback(function() print("tıklandı") end)
+sbb:SetVisible(false)
+sbb:Destroy()
+
+Window:SideBarSpace({})     -- Boşluk ekler
+Window:SideBarDivider({     -- Yatay çizgi ekler
+    Thickness    = 1,
+    Transparency = 0.86,
+    Color        = nil,     -- nil → tema rengi
+    Padding      = 6,
+})
+
+-- Sidebar Section
+local sbSec = Window:Section({
+    Title  = "Araçlar",
+    Icon   = "wrench",
+    Opened = false,
+})
+-- Section içine element ekleme aşağıda "SECTION" bölümünde
+
+-- ── FONT ──────────────────────────────────────────────────────────────────
+WindUI:SetFont("rbxassetid://12187365364")   -- Varsayılan zaten bu
+
+-- ── LOKALİZASYON ──────────────────────────────────────────────────────────
+WindUI:Localization({
+    Enabled         = true,
+    Prefix          = "loc:",
+    DefaultLanguage = "en",
+    Translations    = {
+        en = { welcome = "Welcome" },
+        tr = { welcome = "Hoş geldin" },
+    },
+})
+WindUI:SetLanguage("tr")
+-- Elementlerde: Title = "loc:welcome" yazdığında otomatik çeviri olur
+
+-- ── CONFIG SİSTEMİ ────────────────────────────────────────────────────────
+-- (Folder parametresi verilmişse çalışır, Studio'da çalışmaz)
+local cfg = Window.ConfigManager:CreateConfig("varsayilan", true) -- 2. arg = autoload
+
+cfg:Save()             -- Kaydet
+cfg:Load()             -- Yükle (CustomData tablosu döner)
+cfg:Delete()           -- Dosyayı sil
+
+cfg:SetAutoLoad(true)  -- Otomatik yükle
+
+-- El ile element kayıt:
+cfg:Register("hizFlag", hizSlider)
+cfg:Unregister("hizFlag")
+
+-- Özel veri:
+cfg:Set("sonGiris", os.time())
+cfg:Get("sonGiris")
+
+-- Config verisi:
+cfg:GetData()
+
+-- Tüm config dosyalarını listele:
+Window.ConfigManager:AllConfigs()
+
+-- Silme:
+Window.ConfigManager:DeleteConfig("varsayilan")
+```
+
+---
+
+## TAB
+
+```lua
+local Tab = Window:Tab({
+    Title       = "Ana Sayfa",
+    Icon        = "home",         -- Lucide icon veya rbxassetid
+    IconColor   = nil,            -- Color3 → ikon renkli arka plan (IconShape gerekir)
+    IconShape   = nil,            -- "Circle" veya nil → IconColor ile birlikte çalışır
+    IconThemed  = false,
+    Locked      = false,          -- Tab kilitli mi (tıklanamaz)
+    Desc        = nil,            -- Tooltip metni (hover'da gösterilir)
+    ShowTabTitle= false,          -- İçerik alanının üstünde tab başlığı
+    Border      = false,          -- Aktif tab kenarlığı
+    LayoutOrder = nil,            -- Sıralama
+})
+
+-- Tab methodları:
+Tab:Select()                          -- Bu tabı seç
+
+Tab:LockAll()                         -- Tüm elementleri kilitle
+Tab:UnlockAll()
+Tab:GetLocked()
+Tab:GetUnlocked()
+
+Tab:ScrollToTheElement(3)             -- 3. elementi ekrana kaydır ve vurgula
+```
+
+---
+
+## ELEMENTLER
+
+Her elementin ortak parametreleri:
+- `Title` — başlık
+- `Desc` — açıklama (başlığın altında küçük)
+- `Locked` — boolean, kilitli başlar
+- `LockedTitle` — kilitliyken gösterilecek metin
+- `Flag` — string, config/flag sistemi için benzersiz anahtar
+- `Size` — `"Default"`, `"Small"`, `"Large"`
+
+Her element `element:Lock()`, `element:Unlock()`, `element:SetTitle()`, `element:SetDesc()`, `element:Highlight()`, `element:Destroy()` methodlarına sahiptir.
+
+---
+
+### Button
+
+```lua
+local btn = Tab:Button({
+    Title      = "Teleport Et",
+    Desc       = "Spawn noktasına ışınlar",
+    Icon       = "map-pin",          -- Lucide icon
+    IconThemed = false,
+    IconAlign  = "Right",            -- "Right" veya "Left"
+    Justify    = "Between",          -- "Between" veya "Center"
+    Color      = nil,                -- Color3 veya hex → element arka plan rengi
+    Locked     = false,
+    LockedTitle= "Kilitli",
+    Flag       = "teleportBtn",
+    Size       = "Default",
+    Callback   = function()
+        print("Tıklandı")
+    end,
+})
+
+btn:Lock("Bekleniyor...")
+btn:Unlock()
+btn:SetTitle("Yeni Başlık")
+btn:SetDesc("Yeni açıklama")
+btn:Highlight()     -- Bir kez animasyonlu parlama efekti
+btn:Destroy()
+```
+
+---
+
+### Toggle
+
+```lua
+local toggle = Tab:Toggle({
+    Title      = "Hız Hilesi",
+    Desc       = "Yürüme hızını artırır",
+    Icon       = nil,
+    IconSize   = 23,
+    Value      = false,              -- Başlangıç değeri
+    Type       = "Toggle",           -- "Toggle" veya "Checkbox"
+    Locked     = false,
+    Flag       = "hizHilesi",
+    Callback   = function(value)
+        print("Toggle:", value)      -- true / false
+    end,
+})
+
+toggle:Set(true)           -- Değer ayarla (callback tetiklenir)
+toggle:Set(true, true)     -- Değer ayarla (callback tetiklenmez)
+print(toggle.Value)        -- Mevcut değer
+toggle:Lock()
+toggle:Unlock()
+toggle:Destroy()
+```
+
+---
+
+### Checkbox
+
+```lua
+local cb = Tab:Checkbox({
+    Title    = "Görünmezlik",
+    Desc     = "Karakteri görünmez yapar",
+    Icon     = nil,
+    IconSize = 23,
+    Value    = false,
+    Locked   = false,
+    Flag     = "gorunmezlik",
+    Callback = function(value)
+        print("Checkbox:", value)
+    end,
+})
+
+cb:Set(true)
+cb:Lock()
+cb:Unlock()
+cb:Destroy()
+```
+
+---
+
+### Slider
+
+```lua
+local slider = Tab:Slider({
+    Title     = "Yürüme Hızı",
+    Desc      = "Karakterin hızı",
+    Value     = {
+        Min     = 0,
+        Max     = 100,
+        Default = 16,
+    },
+    Step      = 1,            -- Artış miktarı (kesirli: 0.1 vb.)
+    Width     = 130,          -- Slider genişliği (piksel)
+    IsTextbox = true,         -- Değer textbox ile de girilsin
+    IsTooltip = false,        -- Thumb üstünde tooltip değer göster
+    Icons     = nil,          -- nil veya { From="icon-adı", To="icon-adı" }
+    Locked    = false,
+    Flag      = "yurumeHizi",
+    Callback  = function(value)
+        print("Hız:", value)
+    end,
+})
+
+slider:Set(50)               -- Değer ayarla
+slider:SetMin(10)            -- Minimum değeri değiştir
+slider:SetMax(200)           -- Maksimum değeri değiştir
+print(slider.Value.Default)  -- Mevcut değer
+slider:Lock()
+slider:Unlock()
+slider:Destroy()
+```
+
+---
+
+### Dropdown
+
+```lua
+local dropdown = Tab:Dropdown({
+    Title            = "Oyuncu Seç",
+    Desc             = "Hedef oyuncu",
+    Values           = {"Ahmet", "Mehmet", "Ayşe"},
+    -- Tablo değerler (icon ve desc ile):
+    -- Values = {
+    --     { Title="Ahmet", Desc="Pro oyuncu", Icon="user" },
+    --     { Title="Mehmet", Locked=true },
+    -- },
+    Value            = nil,           -- Başlangıç seçimi (nil veya değer)
+    Multi            = false,         -- Çoklu seçim
+    AllowNone        = false,         -- Seçimi kaldırmaya izin ver
+    SearchBarEnabled = false,         -- Arama kutusu
+    MenuWidth        = nil,           -- Menü genişliği (nil=otomatik)
+    Width            = 150,           -- Dropdown buton genişliği
+    -- Özel türler:
+    SpecialType            = nil,     -- "Player" veya "Team" veya nil
+    ExcludeLocalPlayer     = false,   -- SpecialType="Player" için
+    AutoRefreshSpecialValues= true,   -- Oyuncu listesini otomatik güncelle
+    Locked           = false,
+    Flag             = "oyuncuSec",
+    Callback         = function(value)
+        print("Seçilen:", value)
+        -- Multi=true ise value bir tablodur
+    end,
+})
+
+dropdown:Select("Ahmet")          -- Değer seç
+dropdown:Select(nil)              -- Seçimi kaldır (AllowNone=true gerekir)
+dropdown:Refresh({"A","B","C"})   -- Değerleri güncelle (seçimi korur)
+dropdown:Refresh({"A","B","C"}, true) -- Güncelle ve yeniden seçimi ayarla
+dropdown:Open()
+dropdown:Close()
+dropdown:GetSelected()            -- Seçili değeri döner
+dropdown:SetSpecialType("Player") -- Türü değiştir
+dropdown:SetExcludeLocalPlayer(true)
+dropdown:SetAutoRefreshSpecialValues(false)
+dropdown:Lock()
+dropdown:Unlock()
+dropdown:Destroy()
+```
+
+---
+
+### Input
+
+```lua
+local input = Tab:Input({
+    Title          = "Oyuncu Adı",
+    Desc           = "Hedef oyuncu",
+    Placeholder    = "İsim girin...",
+    Value          = "",              -- Başlangıç değeri
+    Type           = "Input",         -- "Input" (tek satır) veya "Textarea" (çok satır)
+    InputIcon      = false,           -- true → sol tarafta ikon
+    ClearTextOnFocus= false,
+    Width          = 150,
+    Locked         = false,
+    Flag           = "oyuncuAdi",
+    Callback       = function(text)   -- Textarea: her tuşta | Input: odak kayınca
+        print("Girilen:", text)
+    end,
+})
+
+input:Set("Ahmet")             -- Değer ayarla
+input:SetPlaceholder("Yeni placeholder")
+print(input.Value)             -- Mevcut değer
+input:Lock()
+input:Unlock()
+input:Destroy()
+```
+
+---
+
+### Keybind
+
+```lua
+local keybind = Tab:Keybind({
+    Title     = "Aktivasyon Tuşu",
+    Desc      = "Hileyi etkinleştir",
+    Value     = Enum.KeyCode.E,    -- Başlangıç tuşu (EnumItem veya string)
+    CanChange = true,              -- Kullanıcı değiştirebilsin mi
+    Locked    = false,
+    Flag      = "aktivasyonTusu",
+    Callback  = function(keyName)
+        print("Tuş basıldı:", keyName)
+    end,
+})
+
+keybind:Set(Enum.KeyCode.F)    -- Tuşu ayarla
+keybind:Set("MouseLeft")       -- Fare tuşu da atanabilir: "MouseLeft", "MouseRight"
+print(keybind.Value)           -- Örn: "E"
+keybind:Lock()
+keybind:Unlock()
+keybind:Destroy()
+```
+
+---
+
+### Toggle Keybind
+
+Toggle + Keybind birleşimi. Hem toggle hem de klavye kısayolu:
+
+```lua
+local tk = Tab:ToggleKeybind({
+    Title     = "Uçuş",
+    Desc      = "Uçmayı aç/kapat",
+    Value     = false,             -- Toggle başlangıç değeri
+    Type      = "Toggle",          -- "Toggle" veya "Checkbox"
+    Keybind   = Enum.KeyCode.F,    -- Başlangıç kısayolu (Bind veya Key de kabul edilir)
+    CanChange = true,
+    Icon      = nil,
+    IconSize  = 23,
+    Locked    = false,
+    Flag      = "ucus",
+    Callback  = function(value)
+        print("Uçuş:", value)
+    end,
+})
+
+tk:Set(true)
+tk:SetKeybind(Enum.KeyCode.G)
+print(tk.Value)
+print(tk.Keybind)
+tk:Lock()
+tk:Unlock()
+tk:Destroy()
+```
+
+---
+
+### Button Keybind
+
+Buton + Keybind birleşimi. Hem tıklanabilir buton hem de klavye kısayolu:
+
+```lua
+local bk = Tab:ButtonKeybind({
+    Title     = "Teleport",
+    Desc      = "Spawn'a ışınla",
+    Icon      = "map-pin",
+    Value     = Enum.KeyCode.T,    -- Kısayol tuşu
+    CanChange = true,
+    IconAlign = "Right",
+    Justify   = "Between",
+    Color     = nil,
+    Locked    = false,
+    Flag      = "teleportKisayol",
+    Callback  = function()
+        print("Teleport!")
+    end,
+})
+
+bk:Set("Y")                -- Kısayolu değiştir
+print(bk.Value)            -- Mevcut kısayol
+bk:Lock()
+bk:Unlock()
+bk:Destroy()
+```
+
+---
+
+### Colorpicker
+
+```lua
+local cp = Tab:Colorpicker({
+    Title        = "ESP Rengi",
+    Desc         = "Oyuncu rengi",
+    Default      = Color3.fromRGB(255, 0, 0),   -- Başlangıç rengi
+    Transparency = nil,    -- nil → şeffaflık kaydırıcısı yok
+                           -- 0–1 → şeffaflık kaydırıcısı aktif (başlangıç değeri)
+    Locked       = false,
+    Flag         = "espRengi",
+    Callback     = function(color, transparency)
+        print("Renk:", color)
+        print("Şeffaflık:", transparency)  -- Transparency verilmişse
+    end,
+})
+
+cp:Update(Color3.fromRGB(0, 255, 0))              -- Rengi ayarla
+cp:Update(Color3.fromRGB(0, 255, 0), 0.5)         -- Renk + şeffaflık
+-- Alias:
+cp:Set(Color3.fromRGB(0, 255, 0))
+cp:Set(Color3.fromRGB(0, 255, 0), 0.3)
+
+print(cp.Default)          -- Color3
+print(cp.Transparency)     -- nil veya 0–1
+cp:Lock()
+cp:Unlock()
+cp:Destroy()
+```
+
+---
+
+### Stepper (Artı/Eksi Sayı Butonu)
+
+```lua
+local stepper = Tab:Stepper({
+    Title     = "Can Miktarı",
+    Desc      = "Maksimum can",
+    Value     = {
+        Min     = 0,
+        Max     = 200,
+        Default = 100,
+    },
+    Step      = 5,             -- Her tıkta artış miktarı
+    Precision = 0,             -- Ondalık basamak sayısı (0=tam sayı)
+    Prefix    = "",            -- Değer öneki: "+" gibi
+    Suffix    = " HP",         -- Değer soneki: " HP" gibi
+    Format    = nil,           -- Özel format fonksiyonu: function(val,min,max,obj) return string end
+    HoldDelay = 0.28,          -- Basılı tutma başlangıç gecikmesi
+    HoldRate  = 0.07,          -- Basılı tutma hız artışı
+    Width     = 182,           -- Kontrol alanı genişliği
+    ButtonSize= 34,            -- +/- buton boyutu
+    Locked    = false,
+    Flag      = "canMiktari",
+    Callback  = function(value, obj)
+        print("Yeni değer:", value)
+    end,
+})
+
+stepper:Set(150)               -- Değer ayarla (callback tetiklenir)
+stepper:Set(150, false)        -- Değer ayarla (callback tetiklenmez)
+stepper:Add(10)                -- Ekle (alias: stepper:Increment(10))
+stepper:Decrement(5)           -- Çıkar
+stepper:GetValue()             -- Mevcut değeri döner
+stepper:SetRange(0, 300)       -- Aralığı değiştir
+stepper:SetStep(10)            -- Artış miktarını değiştir
+stepper:SetPrecision(2)        -- Ondalık basamağı değiştir
+stepper:SetPrefix("±")
+stepper:SetSuffix(" m/s")
+stepper:SetFormat(function(v) return tostring(v).." birim" end)
+stepper:Lock()
+stepper:Unlock()
+stepper:Destroy()
+```
+
+---
+
+### Segmented (Seçenek Butonları)
+
+```lua
+local seg = Tab:Segmented({
+    Title         = "Mod",
+    Desc          = "Oyun modu seçin",
+    Options       = {"Normal", "Hızlı", "Ultra"},
+    -- Detaylı versiyon:
+    -- Options = {
+    --     { Title="Normal", Value="normal", Icon="circle", Disabled=false },
+    --     { Title="Hızlı",  Value="fast" },
+    -- },
+    Value         = "Normal",          -- Başlangıç seçimi
+    Multi         = false,             -- Çoklu seçim
+    AllowNone     = false,             -- Hiçbiri seçilmesine izin ver
+    MinSelections = 0,                 -- Minimum seçim sayısı
+    MaxSelections = nil,               -- Maksimum seçim sayısı (nil=sınırsız)
+    SegmentHeight = 32,                -- Buton yüksekliği
+    SegmentPaddingX= 12,              -- Yatay iç boşluk
+    SegmentGap    = 6,                 -- Butonlar arası boşluk
+    Locked        = false,
+    Flag          = "oyunModu",
+    Callback      = function(value, obj)
+        print("Seçilen:", value)       -- Multi=true ise tablo
+    end,
+})
+
+seg:Set("Hızlı")               -- Değeri ayarla (callback tetiklenir)
+seg:Set("Hızlı", true)         -- Değeri ayarla (callback tetiklenmez)
+seg:Select("Ultra")            -- Bir seçeneği seç
+seg:Deselect("Normal")         -- Bir seçeneğin seçimini kaldır
+seg:Toggle("Hızlı")            -- Seçim durumunu tersine çevir
+seg:Get()                      -- Mevcut değeri döner
+seg:GetOptions()               -- Tüm seçenekleri döner
+seg:SetOptions({"A","B","C"})  -- Seçenekleri değiştir
+seg:Lock()
+seg:Unlock()
+seg:Destroy()
+```
+
+---
+
+### Progress (İlerleme Çubuğu)
+
+```lua
+local progress = Tab:Progress({
+    Title      = "Yükleniyor",
+    Desc       = "İndirme ilerlemesi",
+    Value      = { Min=0, Max=100, Default=0 },
+    ShowValue  = true,             -- Değeri sağda göster
+    Precision  = 0,                -- Ondalık basamak
+    Prefix     = "",               -- Değer öneki
+    Suffix     = "%",              -- Değer soneki
+    Format     = nil,              -- Özel format: function(v,min,max,pct,obj)
+    Color      = nil,              -- nil → tema Slider rengi | Color3 | string
+    BarHeight  = 8,                -- Çubuk yüksekliği
+    ValueWidth = 96,               -- Değer metni genişliği
+    Locked     = false,
+    Flag       = "yuklemeIlerlemesi",
+    Callback   = function(value, percent, obj)
+        print("Değer:", value, "Yüzde:", percent)
+    end,
+})
+
+progress:Set(75)                   -- Değeri ayarla (animasyonlu)
+progress:Set(75, true, false)      -- Set(val, fireCallback, animate)
+progress:Add(10)                   -- Ekle (alias: :Increment)
+progress:GetValue()                -- Mevcut değer
+progress:GetPercent()              -- 0–1 arası yüzde
+progress:SetRange(0, 200)          -- Aralığı değiştir
+progress:SetColor(Color3.fromHex"#00ff00")
+progress:SetShowValue(false)
+progress:SetPrefix("İlerleme: ")
+progress:SetSuffix(" / 100")
+progress:SetFormat(function(v,min,max,pct) return math.floor(pct*100).."%%" end)
+progress:Lock()
+progress:Unlock()
+progress:Destroy()
+```
+
+---
+
+### Stats (Anahtar-Değer Tablosu)
+
+```lua
+local stats = Tab:Stats({
+    Title      = "Oyuncu Bilgileri",
+    Desc       = nil,
+    Items      = {
+        { Key="Ping",    Value="42 ms" },
+        { Key="FPS",     Value="60" },
+        { Key="Sunucu",  Value="EU-West", Color=Color3.fromHex"#0091FF" },
+    },
+    RowHeight  = 21,               -- Satır yüksekliği
+    ValueWidth = 128,              -- Değer sütunu genişliği
+    ValueColor = nil,              -- Tüm değerlerin rengi (nil=tema)
+    Locked     = false,
+    Flag       = "oyuncuBilgileri",
+    Callback   = function(items, obj)
+        -- Herhangi bir değişiklikte tetiklenir
+    end,
+})
+
+stats:Update("Ping", "18 ms")      -- Var olan satırı güncelle
+stats:Update("Harita", "Obby")     -- Yoksa yeni satır ekler
+stats:Remove("Harita")             -- Satırı sil
+stats:Set({ {Key="A",Value="1"} }) -- Tüm satırları yenile
+stats:Get("Ping")                  -- Değeri döner
+stats:GetItems()                   -- Tüm item tablosunu döner
+stats:Clear()                      -- Tüm satırları sil
+stats:SetValueColor(Color3.fromHex"#ff0000")
+stats:Lock()
+stats:Unlock()
+stats:Destroy()
+```
+
+---
+
+### Label (Etiket)
+
+```lua
+local label = Tab:Label({
+    Text        = "Bilgi: Oyun v2.0",
+    -- Title da kabul edilir (Text ile aynı)
+    Icon        = "info",
+    Placeholder = false,      -- true → soluk renk (placeholder stili)
+    Height      = 42,
+    Padding     = 0,
+    Radius      = 10,
+})
+
+label:Set("Yeni metin")
+label:SetIcon("star")
+label:SetPlaceholder(true)
+label:SetVisible(false)
+label:Destroy()
+```
+
+---
+
+### Paragraph (Uzun Metin Bloğu)
+
+```lua
+local para = Tab:Paragraph({
+    Title   = "Nasıl Kullanılır?",
+    Desc    = "Bu script XYZ özelliğini etkinleştirir.\nLütfen dikkatli kullanın.",
+    Locked  = false,
+    -- Altına buton eklenebilir:
+    Buttons = {
+        { Title="Kopyala", Icon="copy",    Variant="Secondary", Callback=function() end },
+        { Title="Aç",      Icon="external-link", Variant="Primary", Callback=function() end },
+    },
+})
+
+para:Destroy()
+```
+
+---
+
+### Notice (Uyarı / Bilgi Kartı)
+
+```lua
+local notice = Tab:Notice({
+    Title       = "Dikkat",
+    Content     = "Bu özellik deneysel aşamadadır.",
+    Icon        = "triangle-alert",
+    IconThemed  = false,
+    Color       = Color3.fromHex"#f59e0b",   -- Solundaki renkli çizgi
+    Radius      = 12,
+    Padding     = 14,
+    AccentWidth = 6,                          -- Sol renkli çizgi kalınlığı
+    Buttons     = {
+        { Title="Tamam", Variant="Secondary", Callback=function() end },
+    },
+})
+
+notice:SetTitle("Yeni Başlık")
+notice:SetContent("Yeni içerik")
+notice:SetColor(Color3.fromHex"#0091FF")
+notice:SetButtons({ { Title="Anladım", Callback=function() end } })
+notice:SetVisible(false)
+notice:Destroy()
+```
+
+---
+
+### Tags (Etiket Satırı)
+
+```lua
+local tags = Tab:Tags({
+    Items = {
+        "Etiket1",
+        { Title="Pro", Color=Color3.fromHex"#0091FF", Border=true, Icon="star" },
+        { Title="Yeni", Color=Color3.fromHex"#22c55e" },
+    },
+    Gap     = 8,
+    Padding = 0,
+    Height  = 26,
+    Border  = false,  -- Tüm etiketler için varsayılan kenarlık
+    Radius  = nil,    -- Tüm etiketler için varsayılan köşe
+})
+
+tags:Set({ "A", "B", "C" })      -- Tüm etiketleri değiştir
+tags:Add("D")                     -- Yeni etiket ekle
+tags:Clear()                      -- Tüm etiketleri temizle
+tags:GetItems()
+tags:SetVisible(false)
+tags:Destroy()
+```
+
+---
+
+### Code (Kod Bloğu)
+
+```lua
+local code = Tab:Code({
+    Title  = "Örnek Kod",          -- nil → başlık çubuğu yok
+    Code   = [[
+local x = game.Players.LocalPlayer
+print(x.Name)
+    ]],
+    OnCopy = function()            -- Kopyala butonuna basılınca
+        print("Kopyalandı!")
+    end,
+})
+
+code:SetCode([[print("Yeni kod")]])
+code:Set([[print("Alias")]])       -- SetCode ile aynı
+code:Destroy()
+```
+
+---
+
+### Image (Resim)
+
+```lua
+local img = Tab:Image({
+    Image       = "rbxassetid://12345678",
+    AspectRatio = "16:9",   -- String "W:H" veya sayı (örn. 1.777)
+    Radius      = nil,      -- nil → pencere UICorner değeri
+})
+
+img:Destroy()
+```
+
+---
+
+### Video
+
+```lua
+local video = Tab:Video({
+    Title   = nil,
+    Desc    = nil,
+    Video   = "rbxassetid://12345678",   -- veya sayı ID
+    Height  = 200,
+    Looped  = false,
+    Playing = false,
+    Volume  = 0.5,            -- 0–10
+    Visible = true,
+    Radius  = nil,
+    Padding = 5,
+})
+
+video:Play()
+video:Pause()
+video:SetPlaying(true)
+video:SetVideo("rbxassetid://...")
+video:SetVolume(1)
+video:SetLooped(true)
+video:SetVisible(false)
+video:SetHeight(300)
+video:Destroy()
+```
+
+---
+
+### Space (Boşluk)
+
+```lua
+Tab:Space({ Columns = 1 })   -- 1 satır boşluk (Columns çarpanı)
+Tab:Space({ Columns = 2 })   -- 2 satır boşluk
+```
+
+---
+
+### Divider (Yatay Çizgi)
+
+```lua
+local div = Tab:Divider({
+    Thickness    = 1,
+    Padding      = 6,          -- Çizginin üst/alt boşluğu
+    Transparency = nil,        -- nil → tema rengi
+    Color        = nil,        -- nil → tema rengi
+})
+
+div:SetThickness(2)
+div:SetPadding(12)
+div:SetTransparency(0.5)
+div:SetColor(Color3.fromHex"#ff0000")
+div:SetVisible(false)
+div:Destroy()
+```
+
+---
+
+### Group (Yatay Gruplama)
+
+Elementleri yan yana yerleştirir:
+
+```lua
+local group = Tab:Group({
+    -- Group içine normal element methodları eklenir
+})
+group:Toggle({ Title="A", Value=false, Callback=function(v) end })
+group:Toggle({ Title="B", Value=true,  Callback=function(v) end })
+group:Slider({ Title="C", Value={Min=0,Max=100,Default=50}, Callback=function(v) end })
+-- Elementler eşit genişlikte yan yana dizilir
+```
+
+---
+
+### Section (Genişleyebilir Bölüm)
+
+Tab içinde açılıp kapanabilen bölüm. İçine element eklenir:
+
+```lua
+local section = Tab:Section({
+    Title         = "Karakter Ayarları",
+    Desc          = "Karakter ile ilgili tüm ayarlar",
+    Icon          = "user",
+    Box           = false,          -- Arka plan kutusu
+    BoxBorder     = false,          -- Kutu kenarlığı (Box=true gerekir)
+    Opened        = false,          -- Başlangıçta açık mı
+    Hover         = true,           -- Hover geri bildirimi
+    TextXAlignment= "Left",
+    TextSize      = 19,
+    DescTextSize  = 16,
+    FontWeight    = Enum.FontWeight.SemiBold,
+    DescFontWeight= Enum.FontWeight.Medium,
+    TextTransparency    = 0.05,
+    DescTextTransparency= 0.4,
+    HeaderSize    = 42,
+    IconSize      = 20,
+    HeaderGap     = 10,
+})
+
+-- Section içine element ekleme (Tab ile aynı methodlar):
+section:Toggle({ Title="Uçuş", Value=false, Callback=function(v) end })
+section:Slider({ Title="Hız",  Value={Min=0,Max=100,Default=16}, Callback=function(v) end })
+section:Button({ Title="Sıfırla", Callback=function() end })
+section:Dropdown({ Title="Mod", Values={"A","B"}, Callback=function(v) end })
+section:Input({ Title="İsim", Callback=function(v) end })
+-- ... tüm elementler eklenebilir
+
+-- Section methodları:
+section:Open()
+section:Close()
+section:SetTitle("Yeni Başlık")
+section:SetDesc("Yeni açıklama")
+section:SetIcon("settings")
+section:Lock()
+section:Unlock()
+section:Destroy()
+```
+
+---
+
+### MultiSection (Sekmeli Bölüm)
+
+Section içinde sekme yapısı. Her sekmenin kendi içeriği var:
+
+```lua
+local msec = Tab:MultiSection({
+    Title    = "Ayarlar",
+    Desc     = nil,
+    Icon     = "settings",
+    Box      = false,
+    BoxBorder= false,
+    Opened   = false,
+    Hover    = true,
+    -- Sekme görünümü:
+    TabGap       = 6,
+    TabPaddingX  = 12,
+    TabPaddingY  = 8,
+    TabTextSize  = 15,
+    TabDescTextSize= 13,
+    -- Header:
+    HeaderSize   = 42,
+    IconSize     = 20,
+})
+
+local sekme1 = msec:Tab({
+    Title    = "Görsel",
+    Icon     = "eye",
+    IconThemed= false,
+    Desc     = nil,
+    Selected = true,   -- Başlangıçta bu sekme seçili
+})
+sekme1:Toggle({ Title="ESP", Value=false, Callback=function(v) end })
+sekme1:Colorpicker({ Title="ESP Rengi", Default=Color3.fromRGB(255,0,0), Callback=function(c) end })
+
+local sekme2 = msec:Tab({ Title = "Karakter", Icon = "user" })
+sekme2:Slider({ Title="Hız", Value={Min=0,Max=100,Default=16}, Callback=function(v) end })
+
+-- MultiSection methodları:
+msec:SelectTab(sekme1)       -- Sekme objesini geç
+msec:SelectTab(1)            -- İndex ile
+msec:SelectTab("Görsel")     -- İsim ile
+msec:GetSelectedTab()        -- Seçili sekmeyi döner
+msec:GetTabs()               -- Tüm sekmeleri döner
+msec:Open()
+msec:Close()
+msec:SetTitle("Yeni")
+msec:SetDesc("Yeni açıklama")
+msec:SetIcon("sliders-horizontal")
+msec:Destroy()
+
+-- Sekme methodları:
+sekme1:Select()
+sekme1:Destroy()
+```
+
+---
+
+## KEY SİSTEMİ
+
+Window:CreateWindow içinde `KeySystem` parametresi ile kullanılır.
+
+### Yöntem 1: Manuel Key
+
+```lua
+KeySystem = {
+    Title     = "Key Sistemi",           -- nil → pencere başlığı kullanılır
+    Note      = "Key için Discord'a gel", -- Açıklama metni
+    Key       = "BENIM-KEY-123",          -- Tek key (string)
+    -- Veya birden fazla key:
+    -- Key = {"KEY-1", "KEY-2", "KEY-3"},
+    SaveKey   = true,                    -- Key'i dosyaya kaydet, sonraki girişte sorma
+    URL       = "https://discord.gg/...",-- "Key Al" butonu linki
+
+    -- Thumbnail (opsiyonel sol panel):
+    Thumbnail = {
+        Image = "rbxassetid://...",
+        Title = "Script Hub",
+        Width = 200,
+    },
+},
+```
+
+### Yöntem 2: Özel Doğrulayıcı
+
+```lua
+KeySystem = {
+    Title        = "Key Sistemi",
+    Note         = "Aşağıya keyinizi girin",
+    SaveKey      = true,
+    KeyValidator = function(key)
+        -- true → geçerli, false → geçersiz
+        return key == "GIZLI-KEY" or key:sub(1,4) == "KEY_"
+    end,
+},
+```
+
+### Yöntem 3: API Entegrasyonu
+
+```lua
+KeySystem = {
+    Title = "Key Sistemi",
+    Note  = "Key almak için butona basın",
+    API   = {
+        {
+            Type      = "platoboost",
+            ServiceId = "12345",
+            Secret    = "secret-key",
+            Title     = "PlatoBoost ile al",
+            Desc      = "Ücretsiz key",
+            Icon      = nil,
+        },
+        -- Veya diğer sağlayıcılar:
+        {
+            Type      = "pandadevelopment",
+            ServiceId = "67890",
+        },
+        {
+            Type      = "luarmor",
+            ScriptId  = "abc123",
+            Discord   = "https://discord.gg/...",
+        },
+        {
+            Type     = "junkiedevelopment",
+            ServiceId= "111",
+            ApiKey   = "apikey",
+            Provider = "provider",
+        },
+    },
+    SaveKey = true,
+},
+```
+
+---
+
+## ELEMENT ORTAK ÖZELLİKLER
+
+### Flag Sistemi ile Config Entegrasyonu
+
+```lua
+-- Element oluştururken Flag ver:
+local slider = Tab:Slider({
+    Title    = "Hız",
+    Flag     = "hizDegeri",    -- Benzersiz string
+    Value    = { Min=0, Max=100, Default=16 },
+    Callback = function(v) end,
+})
+
+-- Config oluştur ve kaydet/yükle:
+local cfg = Window.ConfigManager:CreateConfig("ayarlar")
+cfg:Save()   -- Tüm Flag'li elementler otomatik kaydedilir
+cfg:Load()   -- Tüm Flag'li elementler otomatik yüklenir
+
+-- Flag sistemi ile programatik erişim:
+Window:GetFlag("hizDegeri")          -- Değeri döner
+Window:SetFlag("hizDegeri", 50)      -- Değeri ayarla
+```
+
+### Element Kilitleme
+
+```lua
+element:Lock()                 -- Kilitle (devre dışı)
+element:Lock("Yakında...")     -- Özel mesaj ile kilitle
+element:Unlock()               -- Kilidi aç
+print(element.Locked)          -- true/false
+```
+
+### Element Vurgulama
+
+```lua
+element:Highlight()            -- Bir kez animasyonlu ışıltı efekti
+```
+
+### Element Silme
+
+```lua
+element:Destroy()
+```
+
+---
+
+## TAM KULLANIM ÖRNEĞİ
+
+```lua
+local WindUI = loadstring(game:HttpGetAsync(
+    "https://raw.githubusercontent.com/SLK-GAMING-MOD/WindUI-Mod/main/dist/main.lua"
+))()
+
+WindUI:SetTheme("Dark")
+
+local Window = WindUI:CreateWindow({
+    Title            = "My Script Hub",
+    Author           = "Mert",
+    Icon             = "zap",
+    Folder           = "MyScriptHub",
+    Theme            = "Dark",
+    Size             = UDim2.new(0, 650, 0, 480),
+    MinSize          = Vector2.new(560, 350),
+    MaxSize          = Vector2.new(850, 560),
+    Resizable        = true,
+    ToggleKey        = Enum.KeyCode.RightShift,
+    BottomDragBarEnabled = true,
+    HideSearchBar    = false,
+    ModernLayout     = false,
+    Watermark        = { Text = "MyHub v1.0", Position = "bottom-right", Opacity = 0.4 },
+})
+
+-- Sidebar
+Window:SideBarLabel({ Title = "v1.0.0", Icon = "tag" })
+Window:SideBarDivider({})
+
+-- Tab oluştur
+local MainTab = Window:Tab({ Title = "Ana Sayfa", Icon = "home" })
+local CombatTab = Window:Tab({ Title = "Dövüş", Icon = "sword" })
+local VisualTab = Window:Tab({ Title = "Görsel", Icon = "eye" })
+local ConfigTab = Window:Tab({ Title = "Config", Icon = "settings" })
+
+-- === ANA SAYFA ===
+MainTab:Paragraph({
+    Title = "Hoş Geldiniz",
+    Desc  = "Bu script oyun deneyiminizi geliştirir. Dikkatli kullanın.",
+})
+MainTab:Notice({
+    Title   = "Uyarı",
+    Content = "Anti-cheat sistemine dikkat edin.",
+    Icon    = "shield-alert",
+    Color   = Color3.fromHex"#f59e0b",
+})
+
+-- === DÖVÜŞ ===
+local hizToggle = CombatTab:Toggle({
+    Title    = "Hız Hilesi",
+    Desc     = "WalkSpeed değerini artırır",
+    Value    = false,
+    Flag     = "hizHilesi",
+    Callback = function(v)
+        game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = v and 50 or 16
+    end,
+})
+
+local hizSlider = CombatTab:Slider({
+    Title    = "Hız Değeri",
+    Desc     = "Yürüme hızı",
+    Value    = { Min=16, Max=200, Default=50 },
+    Step     = 1,
+    Flag     = "hizDegeri",
+    Callback = function(v)
+        if hizToggle.Value then
+            game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = v
+        end
+    end,
+})
+
+CombatTab:Divider({})
+
+local hedefDropdown = CombatTab:Dropdown({
+    Title            = "Hedef Oyuncu",
+    SpecialType      = "Player",
+    ExcludeLocalPlayer = true,
+    Flag             = "hedefOyuncu",
+    Callback         = function(v)
+        print("Hedef:", v and (type(v)=="table" and v.Title or v) or "Yok")
+    end,
+})
+
+CombatTab:Button({
+    Title    = "Teleport Et",
+    Desc     = "Hedefe ışınlan",
+    Icon     = "map-pin",
+    Callback = function()
+        print("Teleport!")
+    end,
+})
+
+-- === GÖRSEL ===
+local espSection = VisualTab:Section({
+    Title  = "ESP Ayarları",
+    Icon   = "scan",
+    Box    = true,
+    Opened = true,
+})
+
+espSection:Toggle({
+    Title    = "ESP Aktif",
+    Value    = false,
+    Flag     = "espAktif",
+    Callback = function(v) print("ESP:", v) end,
+})
+
+espSection:Colorpicker({
+    Title    = "ESP Rengi",
+    Default  = Color3.fromRGB(255, 0, 0),
+    Flag     = "espRengi",
+    Callback = function(c) print("Renk:", c) end,
+})
+
+espSection:Slider({
+    Title    = "ESP Kalınlık",
+    Value    = { Min=1, Max=5, Default=2 },
+    Flag     = "espKalinlik",
+    Callback = function(v) print("Kalınlık:", v) end,
+})
+
+-- MultiSection örneği
+local multiSec = VisualTab:MultiSection({
+    Title  = "Detaylı Ayarlar",
+    Box    = true,
+    Opened = true,
+})
+
+local sekme1 = multiSec:Tab({ Title = "Oyuncu", Icon = "user", Selected = true })
+sekme1:Toggle({ Title="Skeleton", Value=false, Callback=function(v) end })
+sekme1:Toggle({ Title="Box",      Value=false, Callback=function(v) end })
+
+local sekme2 = multiSec:Tab({ Title = "Dünya", Icon = "globe" })
+sekme2:Toggle({ Title="Duvar Görüşü", Value=false, Callback=function(v) end })
+
+-- === CONFIG ===
+local cfg = Window.ConfigManager:CreateConfig("varsayilan", false)
+
+ConfigTab:Button({
+    Title    = "Kaydet",
+    Icon     = "save",
+    Callback = function() cfg:Save(); WindUI:Notify({ Title="Kaydedildi", Icon="check", Duration=3 }) end,
+})
+ConfigTab:Button({
+    Title    = "Yükle",
+    Icon     = "upload",
+    Callback = function() cfg:Load(); WindUI:Notify({ Title="Yüklendi", Icon="check", Duration=3 }) end,
+})
+
+-- Klavye kısayolu
+Window:BindShortcut(Enum.KeyCode.S, function()
+    cfg:Save()
+    WindUI:Notify({ Title="Kaydedildi", Content="Ctrl+S", Icon="save", Duration=2 })
+end, { Ctrl=true })
+```
+
